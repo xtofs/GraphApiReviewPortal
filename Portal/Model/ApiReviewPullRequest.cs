@@ -13,7 +13,6 @@ public class ApiReviewPullRequest
     public string Url => $"https://microsoftgraph.visualstudio.com/_git/onboarding/pullrequest/{Id}";
 
     public required ReadOnlyCollection<(string Name, string Vote)>? ReviewStatus { get; init; }
-
 }
 
 public class User

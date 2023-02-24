@@ -32,7 +32,7 @@ public class ApiReviewRequest
                 Status = pr.Status,
                 ReviewStatus = pr.Reviewers
                     .Where(r => r.IsRequired)
-                    .Select(r => (Short(r), Vote(r.Vote)))
+                    .Select(r => (Short(r), VoteIdentifier(r.Vote)))
                     .ToList().AsReadOnly(),
             }
         };
@@ -47,17 +47,22 @@ public class ApiReviewRequest
             r.DisplayName.PrefixOf(' ');
     }
 
-    private static string Vote(long vote)
+    private static string VoteIdentifier(long vote)
     {
         return VOTE.TryGetValue(vote, out var str) ? str : $"unknown ({vote})";
     }
 
     private static Dictionary<long, string> VOTE = new()
     {
-        [10] = "Approved",
-        [5] = "Approved with suggestion",
-        [0] = "No review yet",
-        [-5] = "Waiting for author",
-        [-10] = "Rejected"
+        [10] = "approved",
+        [5] = "suggestions",
+        [0] = "pending",
+        [-5] = "waiting",
+        [-10] = "rejected"
+        // [10] = "Approved",
+        // [5] = "Approved with suggestion",
+        // [0] = "No review yet",
+        // [-5] = "Waiting for author",
+        // [-10] = "Rejected"
     };
 }

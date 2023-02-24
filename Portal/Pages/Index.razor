@@ -10,44 +10,45 @@
 
 @if (reviews == null)
 {
-    <p><em>Loading...</em></p>
+        <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Owner</th>
-                <th>PR</th>
-                <th>Reviewers</th>
-            </tr>
-        </thead>
-        <tbody>
-
-        @foreach (var item in reviews)
-        {
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Owner</th>
+            <th>PR</th>
+            <th>Reviewers</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in reviews)
+    {
             <tr>
                 <td><a href="@item.Url" target="_blank" rel="noopener noreferrer">@(item.WorkItemId)</a></td>
                 <td>@item.Title</td>
                 <td>@item.Owner.Name</td>
                 <td><a href="@item.PullRequest.Url" target="_blank" rel="noopener noreferrer">@(item.PullRequest?.Status ?? "")</a></td>
-                <td>@foreach (var status in item.PullRequest.ReviewStatus)
+                <td>
+                @foreach (var status in item.PullRequest.ReviewStatus)
                 {
-                    <text><b>@status.Name</b>: @status.Vote <br/></text>
+                    
+                     <img src="img/@(status.Vote).svg"/><text> <b>@status.Name</b>: @status.Vote<br/></text>
                 }
-                </td>
+                </td> 
             </tr>
         }
-        </tbody>
-    </table>
+    </tbody>
+</table>
 }
-
+                    
 @code {
     private ApiReviewRequest[]? reviews;
-
-    protected override async Task OnInitializedAsync()
+                
+    protected override async Task  OnInitializedAsync()
     {
         var items = await ApiReviewService.GetApiReviewRequests();
         reviews = items.ToArray();

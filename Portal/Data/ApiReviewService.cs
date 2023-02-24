@@ -35,7 +35,7 @@ internal class ApiReviewService : IDisposable
             .Select(GetApiReviewRequestFromRef)
         );
 
-        return reviewRequests.OrderBy(r => r.WorkItemId) ?? Enumerable.Empty<ApiReviewRequest>();
+        return reviewRequests.OrderByDescending(r => r.WorkItemId) ?? Enumerable.Empty<ApiReviewRequest>();
     }
 
     private async Task<ApiReviewRequest> GetApiReviewRequestFromRef(WorkItemReference wiRef)
