@@ -30,10 +30,7 @@ internal class ApiReviewService : IDisposable
     {
         var result = await client.GetWorkItemQueryResultAsync(PORTAL_QUERY);
         // work item queries contain only IDs
-        var reviewRequests = await Task.WhenAll(result.WorkItems!
-            .AsParallel()
-            .Select(GetApiReviewRequestFromRef)
-        );
+        var reviewRequests = result.WorkItems!.SelectAsync(GetApiReviewRequestFromRef);
 
         if (filter != null)
         {
@@ -54,5 +51,17 @@ internal class ApiReviewService : IDisposable
         var pr = await client.GetPullRequestAsync(wi.GetPullRequestId())!;
 
         return ApiReviewRequest.From(wi, pr);
+    }
+}
+
+static class EnumerableExtensions
+{
+    public static async Task<S[]> SelectAsync<T, S>(this IEnumerable<T> items, Func<T, Task<S>> asyncSelector)
+    {
+        return await Task
+            .WhenAll<S>(items
+                .AsParallel()
+                .Select(asyncSelector)
+        );
     }
 }

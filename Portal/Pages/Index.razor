@@ -56,7 +56,6 @@ else
 
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
         var filter = query.TryGetValue("filter", out var q) ? q.FirstOrDefault() : "";
-        System.Console.WriteLine("Filter:{0}", filter);
 
         var items = await ApiReviewService.GetApiReviewRequests(filter);
         reviews = items.ToArray();
