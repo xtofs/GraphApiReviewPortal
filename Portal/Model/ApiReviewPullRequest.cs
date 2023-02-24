@@ -12,7 +12,20 @@ public class ApiReviewPullRequest
 
     public string Url => $"https://microsoftgraph.visualstudio.com/_git/onboarding/pullrequest/{Id}";
 
-    public required ReadOnlyCollection<(string Name, string Vote)>? ReviewStatus { get; init; }
+    public required ReadOnlyCollection<(string Name, string Id, string Vote)>? ReviewStatus { get; init; }
+}
+
+public class ReviewStatusComparer : IComparer<(string Name, string Id, string Vote)>
+{
+    public int Compare((string Name, string Id, string Vote) x, (string Name, string Id, string Vote) y)
+    {
+        if (x.Id.StartsWith("vstfs:")) return -1;
+        if (y.Id.StartsWith("vstfs:")) return 1;
+        // System.Console.WriteLine("{0} {1}", x.Id, y.Id);
+        return x.Name.CompareTo(y.Name);
+    }
+
+    public static ReviewStatusComparer Default = new ReviewStatusComparer();
 }
 
 public class User
@@ -28,14 +41,5 @@ public class User
             Name = reviewer?.DisplayName ?? "?",
             Id = reviewer?.UniqueName ?? "?",
         };
-    }
-}
-
-internal static class StringExtensions
-{
-    public static string PrefixOf(this string str, char sep)
-    {
-        var ix = str.IndexOf(sep);
-        return ix < 0 ? str : str.Substring(0, ix);
     }
 }

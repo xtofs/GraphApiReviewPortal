@@ -32,7 +32,7 @@ public class ApiReviewRequest
                 Status = pr.Status,
                 ReviewStatus = pr.Reviewers
                     .Where(r => r.IsRequired)
-                    .Select(r => (Short(r), VoteIdentifier(r.Vote)))
+                    .Select(r => (Short(r), r.UniqueName, VoteIdentifier(r.Vote)))
                     .ToList().AsReadOnly(),
             }
         };

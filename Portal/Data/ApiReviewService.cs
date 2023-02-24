@@ -30,7 +30,7 @@ internal class ApiReviewService : IDisposable
     {
         var result = await client.GetWorkItemQueryResultAsync(PORTAL_QUERY);
         // work item queries contain only IDs
-        var reviewRequests = result.WorkItems!.SelectAsync(GetApiReviewRequestFromRef);
+        var reviewRequests = await result.WorkItems!.SelectAsync(GetApiReviewRequestFromRef);
 
         if (filter != null)
         {

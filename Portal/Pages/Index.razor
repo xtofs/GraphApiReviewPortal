@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Model
+@using Microsoft.AspNetCore.WebUtilities
 @inject ApiReviewService ApiReviewService
 @inject NavigationManager NavigationManager
 
@@ -34,7 +35,7 @@ else
                 <td>@item.Owner.Name</td>
                 <td><a href="@item.PullRequest.Url" target="_blank" rel="noopener noreferrer">@(item.PullRequest?.Status ?? "")</a></td>
                 <td>
-                @foreach (var status in item.PullRequest.ReviewStatus)
+                @foreach (var status in item.PullRequest.ReviewStatus.Order(ReviewStatusComparer.Default))
                 {
                     
                      <img src="img/@(status.Vote).svg"/><text> <b>@status.Name</b>: @status.Vote<br/></text>
@@ -53,8 +54,7 @@ else
     protected override async Task  OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-
-        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        var query = QueryHelpers.ParseQuery(uri.Query);
         var filter = query.TryGetValue("filter", out var q) ? q.FirstOrDefault() : "";
 
         var items = await ApiReviewService.GetApiReviewRequests(filter);
