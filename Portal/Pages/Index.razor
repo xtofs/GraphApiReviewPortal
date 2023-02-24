@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Model
 @inject ApiReviewService ApiReviewService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Graph API reviews</PageTitle>
 
@@ -47,10 +48,17 @@ else
                     
 @code {
     private ApiReviewRequest[]? reviews;
+
                 
     protected override async Task  OnInitializedAsync()
     {
-        var items = await ApiReviewService.GetApiReviewRequests();
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        var filter = query.TryGetValue("filter", out var q) ? q.FirstOrDefault() : "";
+        System.Console.WriteLine("Filter:{0}", filter);
+
+        var items = await ApiReviewService.GetApiReviewRequests(filter);
         reviews = items.ToArray();
     }
 }

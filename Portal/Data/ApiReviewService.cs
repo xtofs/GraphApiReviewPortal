@@ -26,7 +26,7 @@ internal class ApiReviewService : IDisposable
     }
 
 
-    internal async Task<IEnumerable<ApiReviewRequest>> GetApiReviewRequests()
+    internal async Task<IEnumerable<ApiReviewRequest>> GetApiReviewRequests(string? filter = null)
     {
         var result = await client.GetWorkItemQueryResultAsync(PORTAL_QUERY);
         // work item queries contain only IDs
@@ -35,7 +35,17 @@ internal class ApiReviewService : IDisposable
             .Select(GetApiReviewRequestFromRef)
         );
 
-        return reviewRequests.OrderByDescending(r => r.WorkItemId) ?? Enumerable.Empty<ApiReviewRequest>();
+        if (filter != null)
+        {
+            return reviewRequests
+                .Where(r => r.Reviewers.Any(u => u.Name.Contains(filter, StringComparison.InvariantCultureIgnoreCase)))
+                .OrderByDescending(r => r.WorkItemId)
+                ?? Enumerable.Empty<ApiReviewRequest>();
+        }
+        else
+        {
+            return reviewRequests.OrderByDescending(r => r.WorkItemId) ?? Enumerable.Empty<ApiReviewRequest>();
+        }
     }
 
     private async Task<ApiReviewRequest> GetApiReviewRequestFromRef(WorkItemReference wiRef)
