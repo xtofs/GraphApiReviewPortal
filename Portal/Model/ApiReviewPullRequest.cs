@@ -13,6 +13,8 @@ public class ApiReviewPullRequest
     public string Url => $"https://microsoftgraph.visualstudio.com/_git/onboarding/pullrequest/{Id}";
 
     public required ReadOnlyCollection<(string Name, string Id, string Vote)>? ReviewStatus { get; init; }
+
+    public DateTimeOffset? LastMergeCommitDate { get; init; }
 }
 
 public class ReviewStatusComparer : IComparer<(string Name, string Id, string Vote)>
@@ -34,7 +36,7 @@ public class User
     public required string Name { get; init; }
     public string FirstName => Name.PrefixOf(' ');
 
-    internal static User From(ADO.ApiReviewer reviewer)
+    internal static User From(ADO.User reviewer)
     {
         return new User
         {

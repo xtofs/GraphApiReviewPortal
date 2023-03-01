@@ -6,8 +6,6 @@
 
 <PageTitle>Graph API reviews</PageTitle>
 
-<h1>Graph API reviews</h1>
-
 @* <p>This component demonstrates fetching data from a service.</p> *@
 
 @if (reviews == null)
@@ -23,6 +21,7 @@ else
             <th>Title</th>
             <th>Owner</th>
             <th>PR</th>
+            <th>Last Update</th>
             <th>Reviewers</th>
         </tr>
     </thead>
@@ -34,6 +33,7 @@ else
                 <td>@item.Title</td>
                 <td>@item.Owner.Name</td>
                 <td><a href="@item.PullRequest.Url" target="_blank" rel="noopener noreferrer">@(item.PullRequest?.Status ?? "")</a></td>
+                <td>@( (item?.PullRequest?.LastMergeCommitDate ?? DateTimeOffset.MinValue).Date.ToShortDateString())</td>
                 <td>
                 @foreach (var status in item.PullRequest.ReviewStatus.Order(ReviewStatusComparer.Default))
                 {

@@ -28,13 +28,20 @@ internal static class HttpClientExtensions
         return value;
     }
 
+    public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content)
+    {
+        var body = await content.ReadAsStringAsync();
+        var value = JsonSerializer.Deserialize<T>(body)!;
+        return value;
+    }
+
     public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content, string fileName, Func<T, S> getId)
     {
         var body = await content.ReadAsStringAsync();
         var value = JsonSerializer.Deserialize<T>(body)!;
 
-        // var id = getId(value);
-        // File.WriteAllText($"log/{fileName}-{id}.json", System.Text.Json.JsonSerializer.Serialize<T>(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        var id = getId(value);
+        File.WriteAllText($"log/{fileName}-{id}.json", System.Text.Json.JsonSerializer.Serialize<T>(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
         return value;
     }
 }

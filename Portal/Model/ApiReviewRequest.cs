@@ -30,6 +30,7 @@ public class ApiReviewRequest
             {
                 Id = pr.PullRequestId,
                 Status = pr.Status,
+                LastMergeCommitDate = pr?.LastMergeCommit?.Author?.Date,
                 ReviewStatus = pr.Reviewers
                     .Where(r => r.IsRequired)
                     .Select(r => (Short(r), r.UniqueName, VoteIdentifier(r.Vote)))

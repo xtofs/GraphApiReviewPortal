@@ -52,19 +52,19 @@ internal partial class WorkItemFields
     public string? Reason { get; set; }
 
     [JsonPropertyName("System.AssignedTo")]
-    public ApiReviewer? SystemAssignedTo { get; set; }
+    public User? SystemAssignedTo { get; set; }
 
     [JsonPropertyName("System.CreatedDate")]
     public DateTimeOffset SystemCreatedDate { get; set; }
 
     [JsonPropertyName("System.CreatedBy")]
-    public ApiReviewer? SystemCreatedBy { get; set; }
+    public User? SystemCreatedBy { get; set; }
 
     [JsonPropertyName("System.ChangedDate")]
     public DateTimeOffset SystemChangedDate { get; set; }
 
     [JsonPropertyName("System.ChangedBy")]
-    public ApiReviewer? SystemChangedBy { get; set; }
+    public User? SystemChangedBy { get; set; }
 
     [JsonPropertyName("System.CommentCount")]
     public long SystemCommentCount { get; set; }
@@ -85,7 +85,7 @@ internal partial class WorkItemFields
     public double MicrosoftVstsCommonStackRank { get; set; }
 
     [JsonPropertyName("Onboarding.Owner")]
-    public ApiReviewer? Owner { get; set; }
+    public User? Owner { get; set; }
 
     [JsonPropertyName("Microsoft.VSTS.CMMI.Committed")]
     public string? MicrosoftVstsCmmiCommitted { get; set; }
@@ -118,10 +118,10 @@ internal partial class WorkItemFields
     public string? WorkloadId { get; set; }
 
     [JsonPropertyName("Custom.APIreviewer1")]
-    public ApiReviewer? ApiReviewer1 { get; set; }
+    public User? ApiReviewer1 { get; set; }
 
     [JsonPropertyName("Custom.APIreviewer2")]
-    public ApiReviewer? ApiReviewer2 { get; set; }
+    public User? ApiReviewer2 { get; set; }
 
     [JsonPropertyName("Custom.APIchangesize")]
     public string? CustomApiChangeSize { get; set; }
@@ -133,7 +133,7 @@ internal partial class WorkItemFields
     public Uri? OnboardingApiReviewInstructions { get; set; }
 }
 
-internal partial class ApiReviewer
+internal partial class User
 {
     [JsonPropertyName("displayName")]
     public string? DisplayName { get; set; }

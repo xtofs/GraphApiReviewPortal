@@ -5,8 +5,9 @@ namespace Model;
 internal class ApiReviewService : IDisposable
 {
 
-    const string PORTAL_QUERY = "07f74a85-6eea-4c89-ae8a-ca0da83a9734";
+    // const string PORTAL_QUERY = "07f74a85-6eea-4c89-ae8a-ca0da83a9734";
     // const string PORTAL_QUERY = "4211f01e-6749-438c-8390-bb8723b8e9b6"; // me
+    const string PORTAL_QUERY = "0c07ceaf-8ca1-4855-b8bb-de622c92e801"; // backlog  https://microsoftgraph.visualstudio.com/onboarding/_queries/query/0c07ceaf-8ca1-4855-b8bb-de622c92e801/
 
     public ApiReviewService(IConfiguration config)
     {
@@ -36,7 +37,8 @@ internal class ApiReviewService : IDisposable
         {
             return reviewRequests
                 .Where(r => r.Reviewers.Any(u => u.Name.Contains(filter, StringComparison.InvariantCultureIgnoreCase)))
-                .OrderByDescending(r => r.WorkItemId)
+                // .OrderByDescending(r => r.WorkItemId)
+                .OrderByDescending(r => r.PullRequest.LastMergeCommitDate)
                 ?? Enumerable.Empty<ApiReviewRequest>();
         }
         else
@@ -51,17 +53,5 @@ internal class ApiReviewService : IDisposable
         var pr = await client.GetPullRequestAsync(wi.GetPullRequestId())!;
 
         return ApiReviewRequest.From(wi, pr);
-    }
-}
-
-static class EnumerableExtensions
-{
-    public static async Task<S[]> SelectAsync<T, S>(this IEnumerable<T> items, Func<T, Task<S>> asyncSelector)
-    {
-        return await Task
-            .WhenAll<S>(items
-                .AsParallel()
-                .Select(asyncSelector)
-        );
     }
 }
