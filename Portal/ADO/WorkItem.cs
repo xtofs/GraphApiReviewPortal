@@ -12,7 +12,7 @@ internal partial class WorkItem
     public long Rev { get; set; }
 
     [JsonPropertyName("fields")]
-    public WorkItemFields Fields { get; set; } = new WorkItemFields();
+    public required WorkItemFields Fields { get; set; }
 
     [JsonPropertyName("relations")]
     public Relation[]? Relations { get; set; }
@@ -85,7 +85,7 @@ internal partial class WorkItemFields
     public double MicrosoftVstsCommonStackRank { get; set; }
 
     [JsonPropertyName("Onboarding.Owner")]
-    public User? Owner { get; set; }
+    public required User Owner { get; set; }
 
     [JsonPropertyName("Microsoft.VSTS.CMMI.Committed")]
     public string? MicrosoftVstsCmmiCommitted { get; set; }
@@ -118,10 +118,10 @@ internal partial class WorkItemFields
     public string? WorkloadId { get; set; }
 
     [JsonPropertyName("Custom.APIreviewer1")]
-    public User? ApiReviewer1 { get; set; }
+    public required User ApiReviewer1 { get; set; }
 
     [JsonPropertyName("Custom.APIreviewer2")]
-    public User? ApiReviewer2 { get; set; }
+    public required User ApiReviewer2 { get; set; }
 
     [JsonPropertyName("Custom.APIchangesize")]
     public string? CustomApiChangeSize { get; set; }

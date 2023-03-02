@@ -12,10 +12,10 @@ public class ApiReviewPullRequest
 
     public string Url => $"https://microsoftgraph.visualstudio.com/_git/onboarding/pullrequest/{Id}";
 
-    public required ReadOnlyCollection<(string Name, string Id, string Vote)>? ReviewStatus { get; init; }
+    public required ReadOnlyCollection<(string Name, string Id, string Vote)> ReviewStatus { get; init; }
 
-    public required ReadOnlyCollection<(string Name, string Id, string Vote)>? OrderedReviewStatus =>
-        ReviewStatus..Order(ReviewStatusComparer.Default);
+    public IEnumerable<(string Name, string Id, string Vote)> OrderedReviewStatus =>
+        ReviewStatus.Order(ReviewStatusComparer.Default);
 
     public DateTimeOffset? LastMergeCommitDate { get; init; }
 }

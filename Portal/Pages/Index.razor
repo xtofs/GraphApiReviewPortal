@@ -24,7 +24,7 @@ else
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in reviews)
+    @foreach (ApiReviewRequest item in reviews)
     {
             <tr>
                 <td><a href="@item.Url" target="_blank" rel="noopener noreferrer">@(item.WorkItemId)</a></td>
@@ -33,7 +33,7 @@ else
                 <td><a href="@item?.PullRequest.Url" target="_blank" rel="noopener noreferrer">@(item?.PullRequest?.Status ?? "")</a></td>
                 <td>@( (item?.PullRequest?.LastMergeCommitDate ?? DateTimeOffset.MinValue).Date.ToShortDateString())</td>
                 <td>
-                @foreach (var status in item?.PullRequest?.OrderedReviewStatus)
+                @foreach (var status in item.PullRequest.OrderedReviewStatus)
                 {
                     
                      <img src="img/@(status.Vote).svg"/><text> <b>@status.Name</b>:&nbsp;@status.Vote<br/></text>
