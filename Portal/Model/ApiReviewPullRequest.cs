@@ -14,6 +14,9 @@ public class ApiReviewPullRequest
 
     public required ReadOnlyCollection<(string Name, string Id, string Vote)>? ReviewStatus { get; init; }
 
+    public required ReadOnlyCollection<(string Name, string Id, string Vote)>? OrderedReviewStatus =>
+        ReviewStatus..Order(ReviewStatusComparer.Default);
+
     public DateTimeOffset? LastMergeCommitDate { get; init; }
 }
 
