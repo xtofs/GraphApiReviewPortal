@@ -40,9 +40,7 @@ else
                         @foreach (var status in item.PullRequest.OrderedReviewStatus)
                         {
 
-                                                         <img src="img/@(status.Vote).svg"/>
-
-                            <text> <b>@status.Name</b>:&nbsp;@status.Vote<br/></text>
+                                                         <img src="img/@(status.Vote).svg"/><text>&nbsp;<b>@status.Name</b>:&nbsp;@status.Vote<br/></text>
                         }
                                         </td> 
                                     </tr>
