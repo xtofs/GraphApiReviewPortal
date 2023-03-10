@@ -4,52 +4,63 @@
 @inject ApiReviewService ApiReviewService
 @inject NavigationManager NavigationManager
 
-<PageTitle>Graph API reviews</PageTitle>
+<PageTitle>Graph API Reviews</PageTitle>
 
 @if (reviews == null)
 {
-        <p><em>Loading ADO WorkItems...</em></p>
+                    <p><em>Loading ADO WorkItems...</em></p>
 }
 else
 {
-<table class="table">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Owner</th>
-            <th>PR</th>
-            <th>Last Update</th>
-            <th>Reviewers</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (ApiReviewRequest item in reviews)
-    {
-            <tr>
-                <td><a href="@item.Url" target="_blank" rel="noopener noreferrer">@(item.WorkItemId)</a></td>
-                <td>@item.Title</td>
-                <td>@item?.Owner?.Name</td>
-                <td><a href="@item?.PullRequest.Url" target="_blank" rel="noopener noreferrer">@(item?.PullRequest?.Status ?? "")</a></td>
-                <td>@( (item?.PullRequest?.LastMergeCommitDate ?? DateTimeOffset.MinValue).Date.ToShortDateString())</td>
-                <td>
-                @foreach (var status in item.PullRequest.OrderedReviewStatus)
-                {
-                    
-                     <img src="img/@(status.Vote).svg"/><text> <b>@status.Name</b>:&nbsp;@status.Vote<br/></text>
-                }
-                </td> 
-            </tr>
-        }
-    </tbody>
-</table>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Owner</th>
+                    <th>PR</th>
+                    <th>Last Update</th>
+                    <th>Reviewers</th>
+                </tr>
+            </thead>
+            <tbody>
+            @{
+                var i = 0;
+            }
+            @foreach (ApiReviewRequest item in reviews)
+            {
+                                    <tr>
+                                        <td>@(++i)</td>
+                                        <td><a href="@item.Url" target="_blank" rel="noopener noreferrer">@item.Title.Trim(40)</a></td>
+                                        <td>@item?.Owner?.Name</td>
+                                        <td><a href="@item?.PullRequest.Url" target="_blank" rel="noopener noreferrer">@(item?.PullRequest?.Status ?? "")</a></td>
+                                        <td>@((item?.PullRequest?.LastMergeCommitDate ?? DateTimeOffset.MinValue).Date.ToShortDateString())</td>
+                                        <td>
+                        @foreach (var status in item.PullRequest.OrderedReviewStatus)
+                        {
+
+                                                         <img src="img/@(status.Vote).svg"/>
+
+                            <text> <b>@status.Name</b>:&nbsp;@status.Vote<br/></text>
+                        }
+                                        </td> 
+                                    </tr>
+            }
+                </tbody>
+            </table>
+
+    <PageFooter>
+            <h3><a href="@workItemQuery">work item query</a></h3>
+    </PageFooter>
 }
-                    
+
 @code {
     private ApiReviewRequest[]? reviews;
+    private string? workItemQuery;
 
-                
-    protected override async Task  OnInitializedAsync()
+
+    protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
@@ -57,5 +68,7 @@ else
 
         var items = await ApiReviewService.GetApiReviewRequests(filter);
         reviews = items.ToArray();
+
+        workItemQuery = ApiReviewService.PortalQueryURL;
     }
 }
