@@ -13,6 +13,8 @@ Also, make sure you save the porsonal access token in the user secrets.
 dotnet user-secrets set "ADO:PersonalAccessToken" "<your porsonal access token>"
 ```
 
+Your PAT will need the Code Read scope and the Work Items Read scope.
+
 
 
 # internal APIS
