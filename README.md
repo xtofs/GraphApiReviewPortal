@@ -1,3 +1,23 @@
+
+
+# how to run
+
+```
+cd Portal
+dotnet run
+```
+
+
+Also, make sure you save the porsonal access token in the user secrets.
+```sh
+dotnet user-secrets set "ADO:PersonalAccessToken" "<your porsonal access token>"
+```
+
+
+
+# internal APIS
+
+
 query for WorkItems and corresponding PRs
 
 # ADO APIs
