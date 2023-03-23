@@ -37,11 +37,28 @@ internal static class HttpClientExtensions
 
     public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content, string fileName, Func<T, S> getId)
     {
+        return await ReadAsJsonAsync(content, fileName, getId, "log");
+    }
+
+    public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content, string fileName, Func<T, S> getId, string logDirectory)
+    {
         var body = await content.ReadAsStringAsync();
         var value = JsonSerializer.Deserialize<T>(body)!;
 
         var id = getId(value);
-        File.WriteAllText($"log/{fileName}-{id}.json", System.Text.Json.JsonSerializer.Serialize<T>(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        while (true)
+        {
+            try
+            {
+                File.WriteAllText($"{logDirectory}/{fileName}-{id}.json", System.Text.Json.JsonSerializer.Serialize<T>(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                break;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+        }
+
         return value;
     }
 }
