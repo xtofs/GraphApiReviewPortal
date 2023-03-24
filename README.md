@@ -1,3 +1,25 @@
+
+
+# how to run
+
+```
+cd Portal
+dotnet run
+```
+
+
+Also, make sure you save the porsonal access token in the user secrets.
+```sh
+dotnet user-secrets set "ADO:PersonalAccessToken" "<your porsonal access token>"
+```
+
+Your PAT will need the Code Read scope and the Work Items Read scope.
+
+
+
+# internal APIS
+
+
 query for WorkItems and corresponding PRs
 
 # ADO APIs
