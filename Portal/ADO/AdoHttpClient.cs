@@ -1,17 +1,17 @@
 namespace ADO;
 
-internal record class AdoHttpClient(HttpClient client, string organization, string project) : IDisposable
+internal record class AdoHttpClient(HttpClient client, string organization, string project, bool saveApiResponses) : IDisposable
 {
     const string DEFAULT_ORGANIZATION = "microsoftgraph";
     const string DEFAULT_PROJECT = "onboarding";
 
-    internal static AdoHttpClient Create(string personalAccessToken)
+    internal static AdoHttpClient Create(string personalAccessToken, bool saveApiResponses)
     {
         var client = new HttpClient();
         client.DefaultRequestHeaders.AddAcceptJson();
         client.DefaultRequestHeaders.AddPersonalAccessToken(personalAccessToken);
 
-        return new AdoHttpClient(client, DEFAULT_ORGANIZATION, DEFAULT_PROJECT);
+        return new AdoHttpClient(client, DEFAULT_ORGANIZATION, DEFAULT_PROJECT, saveApiResponses);
     }
 
     public void Dispose()
@@ -26,7 +26,7 @@ internal record class AdoHttpClient(HttpClient client, string organization, stri
 
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadAsJsonAsync<QueryResult>();
+        var result = await response.Content.ReadAsJsonAsync<QueryResult, string>(saveApiResponses, "wiq", _ => queryId);
         return result;
     }
 
@@ -37,7 +37,7 @@ internal record class AdoHttpClient(HttpClient client, string organization, stri
         using HttpResponseMessage response = await client.GetAsync(url);
         response.EnsureSuccessStatusCode();
 
-        var wi = await response.Content.ReadAsJsonAsync<WorkItem, long>("wi", w => w.Id);
+        var wi = await response.Content.ReadAsJsonAsync<WorkItem, long>(saveApiResponses, "wi", wi => wi.Id);
         return wi;
     }
 
@@ -48,7 +48,20 @@ internal record class AdoHttpClient(HttpClient client, string organization, stri
         var response = await client.GetAsync(url);
         response.EnsureSuccessStatusCode();
 
-        var pr = await response.Content.ReadAsJsonAsync<PullRequest, long>("pr", p => p.PullRequestId);
+        var pr = await response.Content.ReadAsJsonAsync<PullRequest, long>(saveApiResponses, "pr", pr => pr.PullRequestId);
         return pr;
     }
+
+    public async Task<PullRequestThreads> GetPullRequestThreadsAsync(Guid repoId, long pullRequestId)
+    {
+        // https://learn.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-threads/list?view=azure-devops-rest-7.0&tabs=HTTP
+        var url = $"https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repoId}/pullRequests/{pullRequestId}/threads?api-version=7.0";
+
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var threads = await response.Content.ReadAsJsonAsync<PullRequestThreads, long>(saveApiResponses, "pr-thread", _ => pullRequestId);
+        return threads;
+    }
+
 }

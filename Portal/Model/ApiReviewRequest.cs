@@ -17,7 +17,7 @@ public class ApiReviewRequest
 
     public User? Owner { get; private set; }
 
-    internal static ApiReviewRequest From(WorkItem wi, ADO.PullRequest pr)
+    internal static ApiReviewRequest From(WorkItem wi, ADO.PullRequest pr, ADO.PullRequestThreads threads)
     {
         return new ApiReviewRequest
         {
@@ -35,6 +35,7 @@ public class ApiReviewRequest
                     .Where(r => r.IsRequired)
                     .Select(r => (Short(r), r.UniqueName, VoteIdentifier(r.Vote)))
                     .ToList().AsReadOnly(),
+                LatestUpdate = LatestUpdate.From(threads)
             }
         };
 

@@ -20,28 +20,33 @@ internal static class HttpClientExtensions
         headers.Authorization = new AuthenticationHeaderValue("Basic", header);
     }
 
+    static JsonSerializerOptions Options = new System.Text.Json.JsonSerializerOptions
+    {
+        WriteIndented = true,
+        PropertyNameCaseInsensitive = true
+    };
 
-    public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
+    // public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
+    // {
+    //     var body = await content.ReadAsStringAsync();
+    //     var value = JsonSerializer.Deserialize<T>(body)!;
+    //     return value;
+    // }
+
+    public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content, bool save, string fileName, Func<T, S> getId)
     {
         var body = await content.ReadAsStringAsync();
-        var value = JsonSerializer.Deserialize<T>(body)!;
-        return value;
-    }
+        var value = JsonSerializer.Deserialize<T>(body, Options)!;
 
-    public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content)
-    {
-        var body = await content.ReadAsStringAsync();
-        var value = JsonSerializer.Deserialize<T>(body)!;
-        return value;
-    }
+        if (save)
+        {
+            var id = getId(value);
 
-    public static async Task<T> ReadAsJsonAsync<T, S>(this HttpContent content, string fileName, Func<T, S> getId)
-    {
-        var body = await content.ReadAsStringAsync();
-        var value = JsonSerializer.Deserialize<T>(body)!;
-
-        var id = getId(value);
-        File.WriteAllText($"log/{fileName}-{id}.json", System.Text.Json.JsonSerializer.Serialize<T>(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+            // write raw content
+            File.WriteAllText($"log/{fileName}-{id}.json", body);
+            // write parsed content
+            // File.WriteAllText($"log/{fileName}-{id}.json", System.Text.Json.JsonSerializer.Serialize<T>(value, Options));
+        }
         return value;
     }
 }

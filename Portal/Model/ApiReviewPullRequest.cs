@@ -18,6 +18,7 @@ public class ApiReviewPullRequest
         ReviewStatus.Order(ReviewStatusComparer.Default);
 
     public DateTimeOffset? LastMergeCommitDate { get; init; }
+    public required LatestUpdate LatestUpdate { get; init; }
 }
 
 public class ReviewStatusComparer : IComparer<(string Name, string Id, string Vote)>
@@ -26,7 +27,6 @@ public class ReviewStatusComparer : IComparer<(string Name, string Id, string Vo
     {
         if (x.Id.StartsWith("vstfs:")) return -1;
         if (y.Id.StartsWith("vstfs:")) return 1;
-        // System.Console.WriteLine("{0} {1}", x.Id, y.Id);
         return x.Name.CompareTo(y.Name);
     }
 
@@ -46,5 +46,37 @@ public class User
             Name = reviewer?.DisplayName ?? "?",
             Id = reviewer?.UniqueName ?? "?",
         };
+    }
+}
+
+
+public record LatestUpdate(DateTime? ReviewerLatest, string ReviewerAuthor, DateTime? ProducerLatest, string ProducerAuthor)
+{
+
+    private static HashSet<string> Reviewers = new(){
+        "dkershaw@microsoft.com",
+        "mikep@microsoft.com",
+        "gdebruin@microsoft.com",
+        "chrispre@microsoft.com",
+        "eketo@microsoft.com",
+        "duchau@microsoft.com",
+    };
+
+    public static LatestUpdate From(ADO.PullRequestThreads threads)
+    {
+        var latestMe = threads.value
+            .SelectMany(c => c.comments)
+            .Where(c => c.Author.Id != "00000002-0000-8888-8000-000000000000")
+            .Where(c => Reviewers.Contains(c.Author.UniqueName))
+            .MaxBy(prc => prc.LastContentUpdatedDate);
+        var latestOther = threads.value
+            .SelectMany(c => c.comments)
+            .Where(c => c.Author.Id != "00000002-0000-8888-8000-000000000000")
+            .Where(c => !Reviewers.Contains(c.Author.UniqueName))
+            .MaxBy(prc => prc.LastContentUpdatedDate);
+        return new LatestUpdate(
+            latestMe?.LastContentUpdatedDate, latestMe?.Author?.DisplayName,
+            latestOther?.LastContentUpdatedDate, latestOther?.Author?.DisplayName
+        );
     }
 }

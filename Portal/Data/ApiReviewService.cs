@@ -10,6 +10,7 @@ internal class ApiReviewService : IDisposable
     public const string PORTAL_QUERY = "0c07ceaf-8ca1-4855-b8bb-de622c92e801";
     public string PortalQueryURL = $"https://microsoftgraph.visualstudio.com/onboarding/_queries/query/{PORTAL_QUERY}/";
 
+
     public ApiReviewService(IConfiguration config)
     {
         var personalAccessToken = config["ADO:PersonalAccessToken"];
@@ -17,7 +18,9 @@ internal class ApiReviewService : IDisposable
         {
             throw new Exception("ADO:PersonalAccessToken configuration required");
         }
-        client = AdoHttpClient.Create(personalAccessToken);
+        var saveApiResponses = config.GetValue<bool>("SaveApiResponses");
+
+        client = AdoHttpClient.Create(personalAccessToken, saveApiResponses);
     }
 
     private readonly AdoHttpClient client;
@@ -53,6 +56,8 @@ internal class ApiReviewService : IDisposable
         var wi = await client.GetWorkItemAsync(wiRef.Id)!;
         var pr = await client.GetPullRequestAsync(wi.GetPullRequestId())!;
 
-        return ApiReviewRequest.From(wi, pr);
+        var threads = await client.GetPullRequestThreadsAsync(pr.Repository.Id, pr.PullRequestId)!;
+
+        return ApiReviewRequest.From(wi, pr, threads);
     }
 }

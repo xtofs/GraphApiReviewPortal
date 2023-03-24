@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 internal partial class PullRequest
 {
     [JsonPropertyName("repository")]
-    public Repository? Repository { get; set; }
+    public required Repository Repository { get; set; }
 
     [JsonPropertyName("pullRequestId")]
     public long PullRequestId { get; set; }
